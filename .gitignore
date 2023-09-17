@@ -1,0 +1,7 @@
+# Python
+.venv/
+*.egg-info/
+dist/
+
+# Pyodide
+.pyodide-xbuildenv/
