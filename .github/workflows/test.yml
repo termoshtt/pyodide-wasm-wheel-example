@@ -1,4 +1,4 @@
-name: Build wasm wheel
+name: Test
 
 on:
   push:
@@ -20,17 +20,27 @@ jobs:
       - run: |
           python ./test.py
 
-  build:
+  wasm:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.11.2
-      - run: |
-          pip install pyodide-build>=0.23.0
+          python-version: 3.11.4
+      - name: Install pyodide-build
+        run: |
+          pip install pyodide-build
           echo EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version) >> $GITHUB_ENV
       - uses: mymindstorm/setup-emsdk@v12
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
-      - run: pyodide build
+      - name: Build wasm wheel
+        run: pyodide build
+      - name: Install wheel
+        run: |
+          pyodide venv .venv-pyodide
+          source .venv-pyodide/bin/activate
+          pip install dist/*.whl
+      - name: Test
+        run: |
+          python ./test.py
