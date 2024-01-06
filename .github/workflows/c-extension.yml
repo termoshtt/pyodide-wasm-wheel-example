@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  PYODIDE_BUILD_VERSION: "0.2.3"
+  PYODIDE_BUILD_VERSION: "0.24.1"
   EMSCRIPTEN_VERSION: "3.1.45" # This must be same as $(pyodide config get emscripten_version)
 
 jobs:
