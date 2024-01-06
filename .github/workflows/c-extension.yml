@@ -1,4 +1,4 @@
-name: Test
+name: C extension
 
 on:
   push:
@@ -7,36 +7,33 @@ on:
   pull_request: {}
   workflow_dispatch: {}
 
-jobs:
-  x86_64:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.11.4
-      - run: |
-          pip install -ve .
-      - run: |
-          python ./test.py
+env:
+  PYODIDE_BUILD_VERSION: "0.2.3"
+  EMSCRIPTEN_VERSION: "3.1.45" # This must be same as $(pyodide config get emscripten_version)
 
-  wasm:
+jobs:
+  test:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11.4
+
       - name: Install pyodide-build
         run: |
-          pip install pyodide-build
-          echo EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version) >> $GITHUB_ENV
+          pip install pyodide-build==${{ env.PYODIDE_BUILD_VERSION }}
+
       - uses: mymindstorm/setup-emsdk@v12
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
+
       - name: Build wasm wheel
         run: pyodide build
+        working-directory: ./c-extension
+
       - name: Install and test
+        working-directory: ./c-extension
         run: |
           pyodide venv .venv-pyodide
           source .venv-pyodide/bin/activate
