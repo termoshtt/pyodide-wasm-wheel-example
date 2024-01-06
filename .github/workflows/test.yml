@@ -36,11 +36,9 @@ jobs:
           version: ${{ env.EMSCRIPTEN_VERSION }}
       - name: Build wasm wheel
         run: pyodide build
-      - name: Install wheel
+      - name: Install and test
         run: |
           pyodide venv .venv-pyodide
           source .venv-pyodide/bin/activate
           pip install dist/*.whl
-      - name: Test
-        run: |
           python ./test.py
