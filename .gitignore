@@ -13,3 +13,6 @@ dist/
 _output/
 .jupyterlite.doit.db
 .ipynb_checkpoints/
+
+# Node
+node_modules/

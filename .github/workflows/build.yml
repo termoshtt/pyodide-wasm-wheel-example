@@ -70,6 +70,33 @@ jobs:
           name: rust-wheel
           path: ./rust-extension/dist
 
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [rust, c]
+    needs:
+      - build-rust-extension
+      - build-c-extension
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Rust wheel
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.target }}-wheel
+          path: "."
+
+      - name: NPM install
+        run: |
+          npm install
+
+      - name: Run test
+        run: |
+          node ./test_${{ matrix.target }}.js
+
   jupyterlite:
     runs-on: ubuntu-latest
     steps:
