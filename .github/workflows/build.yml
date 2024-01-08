@@ -1,0 +1,136 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+  workflow_dispatch: {}
+
+env:
+  PYTHON_VERSION: "3.11.4"
+  PYODIDE_BUILD_VERSION: "0.24.1"
+  EMSCRIPTEN_VERSION: "3.1.45" # This must be same as $(pyodide config get emscripten_version)
+
+jobs:
+  build-c-extension:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}}
+
+      - name: Install pyodide-build
+        run: |
+          pip install pyodide-build==${{ env.PYODIDE_BUILD_VERSION }}
+
+      - uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+
+      - name: Build wasm wheel
+        run: pyodide build
+        working-directory: ./c-extension
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: c-wheel
+          path: ./c-extension/dist
+
+  build-rust-extension:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}}
+
+      - uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          target: wasm32-unknown-emscripten
+
+      - name: Build wasm wheel
+        run: |
+          pip install maturin
+          maturin build --release -o dist --target wasm32-unknown-emscripten -i python3.11
+        working-directory: ./rust-extension
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: rust-wheel
+          path: ./rust-extension/dist
+
+  jupyterlite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the dependencies
+        run: |
+          pip install -r requirements-jupyterlite.txt
+      - name: Build the JupyterLite site
+        run: |
+          jupyter lite build --output-dir dist --contents contents/
+      - name: Upload static assets
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlite
+          path: ./dist
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Rust wheel
+        uses: actions/download-artifact@v3
+        with:
+          name: rust-wheel
+          path: "."
+
+      - name: Download C wheel
+        uses: actions/download-artifact@v3
+        with:
+          name: c-wheel
+          path: "."
+
+      - name: Download JupyterLite
+        uses: actions/download-artifact@v3
+        with:
+          name: jupyterlite
+          path: "."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # Upload entire repository
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3
