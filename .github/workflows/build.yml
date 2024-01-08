@@ -92,7 +92,11 @@ jobs:
           path: ./dist
 
   deploy:
-    needs: test
+    needs:
+      - build-c-extension
+      - build-rust-extension
+      - jupyterlite
+
     if: github.ref == 'refs/heads/main'
     permissions:
       pages: write
