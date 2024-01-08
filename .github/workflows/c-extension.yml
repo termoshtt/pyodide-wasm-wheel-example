@@ -53,7 +53,7 @@ jobs:
       id-token: write
 
     environment:
-      name: wheel
+      name: c-wasm-wheel
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest

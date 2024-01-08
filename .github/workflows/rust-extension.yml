@@ -60,7 +60,7 @@ jobs:
       id-token: write
 
     environment:
-      name: wheel
+      name: rust-wasm-wheel
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
