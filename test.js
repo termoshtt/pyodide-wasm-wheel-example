@@ -8,7 +8,7 @@ async function test_rust() {
     await pyodide.loadPackage(
         path.join(
             __dirname,
-            '/rust-extension/dist/rust_extension-0.1.0-cp311-cp311-emscripten_3_1_45_wasm32.whl'
+            '/rust_extension-0.1.0-cp311-cp311-emscripten_3_1_45_wasm32.whl'
         )
     );
     return pyodide.runPythonAsync(`

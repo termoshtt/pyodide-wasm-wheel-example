@@ -84,8 +84,6 @@ jobs:
           name: rust-wheel
           path: "."
 
-      - run: tree
-
       - name: NPM install
         run: |
           npm install
