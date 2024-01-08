@@ -1,6 +1,4 @@
-const fs = require('node:fs');
 const path = require('node:path');
-
 const { loadPyodide } = require("pyodide");
 
 async function test_rust() {
@@ -13,7 +11,7 @@ async function test_rust() {
     );
     return pyodide.runPythonAsync(`
 import rust_extension
-rust_extension.sum_as_string(1, 2)
+print(rust_extension.sum_as_string(1, 2))
     `);
 }
 
