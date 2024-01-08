@@ -6,7 +6,10 @@ const { loadPyodide } = require("pyodide");
 async function test_rust() {
     let pyodide = await loadPyodide();
     await pyodide.loadPackage(
-        'https://termoshtt.github.io/pyodide-wasm-wheel-example/rust_extension-0.1.0-cp311-cp311-emscripten_3_1_45_wasm32.whl'
+        path.join(
+            __dirname,
+            '/rust-extension/dist/rust_extension-0.1.0-cp311-cp311-emscripten_3_1_45_wasm32.whl'
+        )
     );
     return pyodide.runPythonAsync(`
 import rust_extension
