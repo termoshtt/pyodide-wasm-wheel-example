@@ -1,4 +1,4 @@
-name: C extension
+name: Rust extension
 
 on:
   push:
@@ -8,8 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  PYODIDE_BUILD_VERSION: "0.24.1"
-  EMSCRIPTEN_VERSION: "3.1.45" # This must be same as $(pyodide config get emscripten_version)
+  EMSCRIPTEN_VERSION: "3.1.45"
 
 jobs:
   test:
@@ -20,20 +19,28 @@ jobs:
         with:
           python-version: 3.11.4
 
-      - name: Install pyodide-build
-        run: |
-          pip install pyodide-build==${{ env.PYODIDE_BUILD_VERSION }}
-
       - uses: mymindstorm/setup-emsdk@v12
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
 
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          target: wasm32-unknown-emscripten
+
+      - name: Install pyodide-build
+        run: |
+          pip install maturin pyodide-build
+
       - name: Build wasm wheel
-        run: pyodide build
-        working-directory: ./c-extension
+        run: |
+          maturin build --release -o dist --target wasm32-unknown-emscripten -i python3.11
+        working-directory: ./rust-extension
 
       - name: Install and test
-        working-directory: ./c-extension
+        working-directory: ./rust-extension
         run: |
           pyodide venv .venv-pyodide
           source .venv-pyodide/bin/activate
@@ -43,7 +50,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./c-extension/dist
+          path: ./rust-extension/dist
 
   deploy:
     needs: test
@@ -53,7 +60,7 @@ jobs:
       id-token: write
 
     environment:
-      name: c-wasm-wheel
+      name: rust-wasm-wheel
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
