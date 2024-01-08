@@ -1,10 +1,17 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
 const { loadPyodide } = require("pyodide");
 
-async function hello_python() {
+async function test_rust() {
     let pyodide = await loadPyodide();
-    return pyodide.runPythonAsync("1+1");
+    await pyodide.loadPackage(
+        'https://termoshtt.github.io/pyodide-wasm-wheel-example/rust_extension-0.1.0-cp311-cp311-emscripten_3_1_45_wasm32.whl'
+    );
+    return pyodide.runPythonAsync(`
+import rust_extension
+rust_extension.sum_as_string(1, 2)
+    `);
 }
 
-hello_python().then((result) => {
-    console.log("Python says that 1+1 =", result);
-});
+test_rust();
