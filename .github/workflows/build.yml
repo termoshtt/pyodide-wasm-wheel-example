@@ -78,6 +78,7 @@ jobs:
         target: [rust, c]
     needs:
       - build-rust-extension
+      - build-c-extension
     steps:
       - name: Checkout
         uses: actions/checkout@v3
