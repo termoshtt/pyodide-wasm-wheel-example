@@ -51,11 +51,6 @@ jobs:
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          targets: wasm32-unknown-emscripten
-
       - name: Build wasm wheel
         run: |
           pip install maturin
