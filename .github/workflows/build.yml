@@ -112,7 +112,9 @@ jobs:
 
       - name: Build the JupyterLite site
         run: |
-          jupyter lite build --output-dir dist --contents contents/ --piplite-wheels wheels/*.whl
+          jupyter lite build --output-dir dist --contents contents/ \
+            --piplite-wheels wheels/pyodide_wasm_wheel_example*.whl \
+            --piplite-wheels wheels/rust_extension*.whl
 
       - name: Upload static assets
         uses: actions/upload-artifact@v4
