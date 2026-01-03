@@ -16,8 +16,8 @@ jobs:
   build-c-extension:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -34,7 +34,7 @@ jobs:
         working-directory: ./c-extension
 
       - name: Upload wheel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: c-wheel
           path: ./c-extension/dist
@@ -42,8 +42,8 @@ jobs:
   build-rust-extension:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -52,11 +52,9 @@ jobs:
           version: ${{ env.EMSCRIPTEN_VERSION }}
 
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          profile: minimal
-          toolchain: nightly
-          target: wasm32-unknown-emscripten
+          targets: wasm32-unknown-emscripten
 
       - name: Build wasm wheel
         run: |
@@ -65,7 +63,7 @@ jobs:
         working-directory: ./rust-extension
 
       - name: Upload wheel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rust-wheel
           path: ./rust-extension/dist
@@ -81,10 +79,10 @@ jobs:
       - build-c-extension
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Download Rust wheel
-        uses: actions/download-artifact@v3
+      - name: Download wheel
+        uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.target }}-wheel
           path: "."
@@ -101,9 +99,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install the dependencies
@@ -113,7 +111,7 @@ jobs:
         run: |
           jupyter lite build --output-dir dist --contents contents/
       - name: Upload static assets
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jupyterlite
           path: ./dist
@@ -136,19 +134,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Rust wheel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: rust-wheel
           path: "."
 
       - name: Download C wheel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: c-wheel
           path: "."
 
       - name: Download JupyterLite
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: jupyterlite
           path: "."
@@ -157,7 +155,7 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: "."
