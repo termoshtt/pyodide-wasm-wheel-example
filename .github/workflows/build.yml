@@ -50,15 +50,37 @@ jobs:
           name: rust-wheel
           path: ./rust-extension/dist
 
+  build-cpp-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build wasm wheel
+        uses: pypa/cibuildwheel@v3.3
+        with:
+          package-dir: ./cpp-extension
+          output-dir: ./cpp-extension/dist
+        env:
+          CIBW_PLATFORM: pyodide
+          CIBW_BUILD: cp313-pyodide_wasm32
+          CIBW_PYODIDE_VERSION: "0.29.0"
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpp-wheel
+          path: ./cpp-extension/dist
+
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        target: [rust, c]
+        target: [rust, c, cpp]
     needs:
       - build-rust-extension
       - build-c-extension
+      - build-cpp-extension
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,6 +104,7 @@ jobs:
     needs:
       - build-c-extension
       - build-rust-extension
+      - build-cpp-extension
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,6 +121,12 @@ jobs:
           name: rust-wheel
           path: ./wheels
 
+      - name: Download C++ wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: cpp-wheel
+          path: ./wheels
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
@@ -112,7 +141,8 @@ jobs:
         run: |
           uv run --project jupyterlite jupyter lite build --output-dir dist --contents jupyterlite/contents/ \
             --piplite-wheels wheels/pyodide_wasm_wheel_example*.whl \
-            --piplite-wheels wheels/rust_extension*.whl
+            --piplite-wheels wheels/rust_extension*.whl \
+            --piplite-wheels wheels/cpp_extension*.whl
 
       - name: Upload static assets
         uses: actions/upload-artifact@v4
@@ -124,6 +154,7 @@ jobs:
     needs:
       - build-c-extension
       - build-rust-extension
+      - build-cpp-extension
       - jupyterlite
 
     if: github.ref == 'refs/heads/main'
@@ -147,6 +178,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: c-wheel
+          path: "."
+
+      - name: Download C++ wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: cpp-wheel
           path: "."
 
       - name: Download JupyterLite
