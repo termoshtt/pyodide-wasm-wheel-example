@@ -108,11 +108,11 @@ jobs:
 
       - name: Install the dependencies
         run: |
-          pip install -r requirements-jupyterlite.txt
+          pip install -r jupyterlite/requirements-jupyterlite.txt
 
       - name: Build the JupyterLite site
         run: |
-          jupyter lite build --output-dir dist --contents contents/ \
+          jupyter lite build --output-dir dist --contents jupyterlite/contents/ \
             --piplite-wheels wheels/pyodide_wasm_wheel_example*.whl \
             --piplite-wheels wheels/rust_extension*.whl
 
