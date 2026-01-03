@@ -3,11 +3,11 @@ const { glob } = require('glob');
 const { loadPyodide } = require("pyodide");
 
 async function test_rust() {
-    const wheels = await glob('rust_extension-*.whl');
+    const wheels = await glob('../rust_extension-*.whl', { cwd: __dirname });
     if (wheels.length === 0) {
         throw new Error('No wheel found for rust_extension');
     }
-    const wheelPath = path.join(__dirname, wheels[0]);
+    const wheelPath = path.resolve(__dirname, wheels[0]);
 
     let pyodide = await loadPyodide();
     await pyodide.loadPackage(wheelPath);

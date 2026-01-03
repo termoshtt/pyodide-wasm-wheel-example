@@ -71,11 +71,11 @@ jobs:
 
       - name: NPM install
         run: |
-          npm ci
+          npm ci --prefix tests
 
       - name: Run test
         run: |
-          node ./test_${{ matrix.target }}.js
+          node tests/test_${{ matrix.target }}.js
 
   jupyterlite:
     runs-on: ubuntu-latest
