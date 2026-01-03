@@ -1,6 +1,0 @@
-# Core modules
-jupyterlite-core>=0.7.0
-jupyterlab>=4.0
-
-# Python kernel (Pyodide)
-jupyterlite-pyodide-kernel>=0.7.0
