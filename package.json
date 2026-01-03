@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "pyodide": "^0.24.1"
+    "glob": "^11.0.0",
+    "pyodide": "^0.26.0"
   }
 }
