@@ -98,21 +98,19 @@ jobs:
           name: rust-wheel
           path: ./wheels
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: List wheels
         run: ls -la wheels/
 
       - name: Install the dependencies
         run: |
-          pip install -r jupyterlite/requirements-jupyterlite.txt
+          uv sync --project jupyterlite
 
       - name: Build the JupyterLite site
         run: |
-          jupyter lite build --output-dir dist --contents jupyterlite/contents/ \
+          uv run --project jupyterlite jupyter lite build --output-dir dist --contents jupyterlite/contents/ \
             --piplite-wheels wheels/pyodide_wasm_wheel_example*.whl \
             --piplite-wheels wheels/rust_extension*.whl
 
