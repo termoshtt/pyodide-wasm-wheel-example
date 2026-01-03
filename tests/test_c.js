@@ -3,17 +3,17 @@ const { glob } = require('glob');
 const { loadPyodide } = require("pyodide");
 
 async function test_c() {
-    const wheels = await glob('../pyodide_wasm_wheel_example-*.whl', { cwd: __dirname });
+    const wheels = await glob('../c_extension-*.whl', { cwd: __dirname });
     if (wheels.length === 0) {
-        throw new Error('No wheel found for pyodide_wasm_wheel_example');
+        throw new Error('No wheel found for c_extension');
     }
     const wheelPath = path.resolve(__dirname, wheels[0]);
 
     let pyodide = await loadPyodide();
     await pyodide.loadPackage(wheelPath);
     return pyodide.runPythonAsync(`
-import pyodide_wasm_wheel_example
-print(pyodide_wasm_wheel_example.f())
+import c_extension
+print(c_extension.f())
     `);
 }
 

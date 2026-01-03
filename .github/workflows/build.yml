@@ -140,7 +140,7 @@ jobs:
       - name: Build the JupyterLite site
         run: |
           uv run --project jupyterlite jupyter lite build --output-dir dist --contents jupyterlite/contents/ \
-            --piplite-wheels wheels/pyodide_wasm_wheel_example*.whl \
+            --piplite-wheels wheels/c_extension*.whl \
             --piplite-wheels wheels/rust_extension*.whl \
             --piplite-wheels wheels/cpp_extension*.whl
 
