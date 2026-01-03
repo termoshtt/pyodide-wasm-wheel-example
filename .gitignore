@@ -11,6 +11,7 @@ dist/
 
 # JupyterLite
 _output/
+jupyterlite/
 .jupyterlite.doit.db
 .ipynb_checkpoints/
 
