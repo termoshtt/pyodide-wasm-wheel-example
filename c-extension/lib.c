@@ -14,13 +14,13 @@ static PyMethodDef methods[] = {
 
 static struct PyModuleDef mod = {
     PyModuleDef_HEAD_INIT,
-    "pyodide_wasm_wheel_example",
+    "c_extension",
     NULL,
     -1,
     methods};
 
 PyMODINIT_FUNC
-PyInit_pyodide_wasm_wheel_example(void)
+PyInit_c_extension(void)
 {
     return PyModule_Create(&mod);
 }

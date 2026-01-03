@@ -1,0 +1,15 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "cpp-extension"
+version = "0.1.0"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: C++",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
