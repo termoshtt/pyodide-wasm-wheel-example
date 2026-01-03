@@ -103,6 +103,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: List wheels
+        run: ls -la wheels/
+
       - name: Install the dependencies
         run: |
           pip install -r requirements-jupyterlite.txt
