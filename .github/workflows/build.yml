@@ -69,7 +69,7 @@ jobs:
 
       - name: NPM install
         run: |
-          npm install
+          npm ci
 
       - name: Run test
         run: |
