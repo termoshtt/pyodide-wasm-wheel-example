@@ -77,19 +77,38 @@ jobs:
 
   jupyterlite:
     runs-on: ubuntu-latest
+    needs:
+      - build-c-extension
+      - build-rust-extension
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download C wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: c-wheel
+          path: ./wheels
+
+      - name: Download Rust wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: rust-wheel
+          path: ./wheels
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+
       - name: Install the dependencies
         run: |
           pip install -r requirements-jupyterlite.txt
+
       - name: Build the JupyterLite site
         run: |
-          jupyter lite build --output-dir dist --contents contents/
+          jupyter lite build --output-dir dist --contents contents/ --piplite-wheels wheels/*.whl
+
       - name: Upload static assets
         uses: actions/upload-artifact@v4
         with:
